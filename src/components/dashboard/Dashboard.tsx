@@ -2,14 +2,73 @@
 
 import { trpc } from "@/app/_trpc/client";
 import UploadButton from "./UploadButton";
-import { Ghost, MessageSquare, Plus, Trash2 } from "lucide-react";
+import {
+  Check,
+  Ghost,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import Link from "next/link";
 import { format } from "date-fns";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const Dashboard = () => {
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const deleteNotify = () => {
+    toast.custom((t) => (
+      <div
+        className={`${
+          t.visible ? "animate-enter" : "animate-leave"
+        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+      >
+        <div className="flex-1 w-0 p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 pt-0.5">
+              <Check className="h-10 w-10" color="#008000" />
+            </div>
+            <div className="ml-3 flex-1">
+              <p className="text-sm font-medium text-gray-900">Alert</p>
+              <p className="mt-1 text-sm text-gray-500">
+                You have successfully deleted a file!
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex border-l border-gray-200">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
+  const utils = trpc.useUtils();
+
   const { data: files, isLoading } = trpc.getUserFiles.useQuery();
+
+  const { mutate: deleteFile } = trpc.deleteFile.useMutation({
+    onMutate({ id }) {
+      setIsDeleting(id);
+    },
+    onSuccess: () => {
+      deleteNotify();
+      utils.getUserFiles.invalidate();
+    },
+    onSettled() {
+      setIsDeleting(null);
+    },
+  });
+
   return (
     <main className="mx-auto max-w-7xl md:p-10">
       <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
@@ -56,12 +115,25 @@ const Dashboard = () => {
                     Mocked
                   </div>
                   <Button
+                    onClick={() => deleteFile({ id: file.id })}
                     size={"sm"}
                     className="w-full"
                     variant={"destructive"}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {isDeleting === file.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
+                  <Toaster
+                    position="bottom-right"
+                    toastOptions={{
+                      custom: {
+                        duration: 1500,
+                      },
+                    }}
+                  />
                 </div>
               </li>
             ))}
