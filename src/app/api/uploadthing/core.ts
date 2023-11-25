@@ -3,6 +3,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { pinecone } from "@/lib/pinecone/pinecone";
 
 const f = createUploadthing();
@@ -41,12 +42,36 @@ export const ourFileRouter = {
         const pagesAmt = pageLevelDocs.length;
 
         // Vectorize the entire PDF
-        const pineconeIndex = pinecone.Index("docutalk");
+        const pineconeIndex = pinecone.index("docutalk");
 
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY,
         });
-      } catch (error) {}
+
+        await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
+          pineconeIndex,
+          namespace: createdFile.id,
+        });
+
+        await db.file.update({
+          data: {
+            uploadStatus: "SUCCESS",
+          },
+          where: {
+            id: createdFile.id,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        await db.file.update({
+          data: {
+            uploadStatus: "FAILED",
+          },
+          where: {
+            id: createdFile.id,
+          },
+        });
+      }
     }),
 } satisfies FileRouter;
 
