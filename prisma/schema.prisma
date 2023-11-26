@@ -15,13 +15,32 @@ model User {
   id    String @id @unique
   email String @unique
 
-  File    File[]
-  Message Message[]
+  File        File[]
+  Message     Message[]
+  Transaction Transaction[]
+}
 
-  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
-  stripePriceId          String?   @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+enum TransactionStatus {
+  PENDING
+  PAID
+  SETTLED
+  EXPIRED
+}
+
+model Transaction {
+  id                  String  @id @default(cuid())
+  xenditTransactionId String?
+  xenditInvoiceUrl    String?
+
+  description       String
+  amount            Float             @db.Double
+  transactionStatus TransactionStatus @default(PENDING)
+  expiredDate       DateTime
+
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum UploadStatus {
