@@ -30,7 +30,6 @@ export const appRouter = router({
         },
       });
     }
-
     return { success: true };
   }),
   getUserFiles: privateProcedure.query(async ({ ctx }) => {
@@ -142,6 +141,38 @@ export const appRouter = router({
 
       return file;
     }),
+  getMembershipStatus: privateProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    const dbUser = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!dbUser) throw new TRPCError({ code: "NOT_FOUND" });
+
+    const isValid = Boolean(
+      dbUser.isMember &&
+        dbUser.membershipEnd && // 86400000 = 1 day
+        dbUser.membershipEnd.getTime() + 86_400_000 > Date.now()
+    );
+
+    if (!isValid) {
+      db.user.update({
+        where: {
+          id: dbUser.id,
+        },
+        data: {
+          isMember: false,
+          membershipType: "free",
+          membershipEnd: null,
+        },
+      });
+      return dbUser;
+    }
+    return dbUser;
+  }),
   createXenditSession: privateProcedure.mutation(async ({ ctx }) => {
     const { userId } = ctx;
 
