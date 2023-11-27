@@ -18,6 +18,10 @@ model User {
   File        File[]
   Message     Message[]
   Transaction Transaction[]
+
+  isMember       Boolean   @default(false)
+  membershipType String    @default("free")
+  membershipEnd  DateTime?
 }
 
 enum TransactionStatus {

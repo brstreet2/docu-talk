@@ -94,12 +94,12 @@ const Page = async () => {
                 <div
                   key={plan}
                   className={cn("relative rounded-2xl bg-white shadow-lg", {
-                    "border-2 border-blue-600 shadow-blue-200": plan === "Pro",
+                    "border-2 border-red-500 shadow-purple-200": plan === "Pro",
                     "border border-gray-200": plan !== "Pro",
                   })}
                 >
                   {plan === "Pro" && (
-                    <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white">
+                    <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-red-600 to-purple-600 px-3 py-2 text-sm font-medium text-white">
                       Upgrade Now
                     </div>
                   )}
@@ -109,8 +109,11 @@ const Page = async () => {
                       {plan}
                     </h3>
                     <p className="text-gray-500">{tagline}</p>
-                    <p className="my-5 font-display text-6xl font-semibold">
-                      ${price}
+                    <p className="my-5 font-display text-4xl font-semibold">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      }).format(price)}
                     </p>
                     <p className="text-gray-500">per month</p>
                   </div>
