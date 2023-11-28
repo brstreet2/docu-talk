@@ -4,7 +4,10 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
+import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { pinecone } from "@/lib/pinecone/pinecone";
+import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase/supabase";
 
 const f = createUploadthing();
 
@@ -42,15 +45,22 @@ export const ourFileRouter = {
         const pagesAmt = pageLevelDocs.length;
 
         // Vectorize the entire PDF
-        const pineconeIndex = pinecone.index("docutalk");
-
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY,
         });
 
-        await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
-          pineconeIndex,
-          // namespace: createdFile.id,
+        // Pinecone VectorDB
+        // const pineconeIndex = pinecone.index("docutalk");
+        // await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
+        //   pineconeIndex,
+        //   // namespace: createdFile.id,
+        // });
+
+        // Supabase VectorDB
+        await SupabaseVectorStore.fromDocuments(pageLevelDocs, embeddings, {
+          client: supabase,
+          tableName: "documents",
+          queryName: "match_documents",
         });
 
         await db.file.update({

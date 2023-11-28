@@ -7,6 +7,8 @@ import { pinecone } from "@/lib/pinecone/pinecone";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { openai } from "@/lib/openai/openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
+import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
+import supabase from "@/lib/supabase/supabase";
 
 export const POST = async (req: NextRequest) => {
   // Endpoint
@@ -44,13 +46,24 @@ export const POST = async (req: NextRequest) => {
     openAIApiKey: process.env.OPENAI_API_KEY,
   });
 
-  const pineconeIndex = pinecone.index("docutalk");
+  // Pinecone VectorDB
+  // const pineconeIndex = pinecone.index("docutalk");
+  // const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+  //   pineconeIndex,
+  // });
+  // const results = await vectorStore.similaritySearch(message, 4);
 
-  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-    pineconeIndex,
-  });
+  // Supabase VectorDB
+  const supabaseStore = await SupabaseVectorStore.fromExistingIndex(
+    embeddings,
+    {
+      client: supabase,
+      tableName: "documents",
+      queryName: "match_documents",
+    }
+  );
 
-  const results = await vectorStore.similaritySearch(message, 4);
+  const results = await supabaseStore.similaritySearch(message, 1);
 
   const prevMessages = await db.message.findMany({
     where: {
