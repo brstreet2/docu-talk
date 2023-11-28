@@ -159,7 +159,7 @@ export const appRouter = router({
     );
 
     if (!isValid) {
-      db.user.update({
+      const updatedUser = await db.user.update({
         where: {
           id: dbUser.id,
         },
@@ -169,9 +169,19 @@ export const appRouter = router({
           membershipEnd: null,
         },
       });
-      return dbUser;
+      let response = {
+        isMember: updatedUser.isMember,
+        membershipType: updatedUser.membershipType,
+        membershipEnd: updatedUser.membershipEnd,
+      };
+      return response;
     }
-    return dbUser;
+    let response = {
+      isMember: dbUser.isMember,
+      membershipType: dbUser.membershipType,
+      membershipEnd: dbUser.membershipEnd,
+    };
+    return response;
   }),
   createXenditSession: privateProcedure.mutation(async ({ ctx }) => {
     const { userId } = ctx;
