@@ -26,6 +26,8 @@ const Page = () => {
     retryDelay: 500,
   });
 
+  trpc.getMembershipStatus.useQuery();
+
   return (
     <div className="w-full mt-24 flex justify-center">
       <div className="flex flex-col items-center gap-2">
