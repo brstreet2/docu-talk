@@ -9,6 +9,7 @@ type StreamResponse = {
   message: string;
   handleInputChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading: boolean;
+  characterLeft: number;
 };
 
 export const MessageContext = createContext<StreamResponse>({
@@ -16,6 +17,7 @@ export const MessageContext = createContext<StreamResponse>({
   message: "",
   handleInputChange: () => {},
   isLoading: false,
+  characterLeft: 0,
 });
 
 interface Props {
@@ -26,6 +28,7 @@ interface Props {
 export const MessageContextProvider = ({ fileId, children }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [characterLeft, setCharacterLeft] = useState<number>(0);
 
   const utils = trpc.useUtils();
 
@@ -186,6 +189,7 @@ export const MessageContextProvider = ({ fileId, children }: Props) => {
   const addMessage = () => sendMessage({ message });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCharacterLeft(e.target.value.length);
     setMessage(e.target.value);
   };
 
@@ -196,6 +200,7 @@ export const MessageContextProvider = ({ fileId, children }: Props) => {
         message,
         handleInputChange,
         isLoading,
+        characterLeft,
       }}
     >
       {children}

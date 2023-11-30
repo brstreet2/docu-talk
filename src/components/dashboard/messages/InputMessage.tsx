@@ -9,7 +9,7 @@ interface InputMessageProps {
 }
 
 const InputMessage = ({ isDisabled }: InputMessageProps) => {
-  const { addMessage, handleInputChange, isLoading, message } =
+  const { addMessage, handleInputChange, isLoading, message, characterLeft } =
     useContext(MessageContext);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -24,6 +24,7 @@ const InputMessage = ({ isDisabled }: InputMessageProps) => {
                 ref={textareaRef}
                 rows={1}
                 maxRows={4}
+                maxLength={200}
                 autoFocus
                 onChange={handleInputChange}
                 value={message}
@@ -36,13 +37,14 @@ const InputMessage = ({ isDisabled }: InputMessageProps) => {
                     textareaRef.current?.focus();
                   }
                 }}
-                placeholder="Enter your question ..."
+                placeholder="Enter your question..."
                 className="resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
               />
 
               <Button
                 disabled={isLoading || isDisabled}
                 aria-label="send message"
+                variant="ghost"
                 className="absolute bottom-1.5 right-[8px]"
                 onClick={() => {
                   addMessage();
@@ -53,6 +55,9 @@ const InputMessage = ({ isDisabled }: InputMessageProps) => {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              You have {characterLeft} of 200 character(s) remaining.
+            </p>
           </div>
         </div>
       </div>

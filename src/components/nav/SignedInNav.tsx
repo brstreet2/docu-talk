@@ -59,10 +59,10 @@ const SignedInNav = async ({ email, imageUrl, name }: SignedInNavProps) => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem asChild className="cursor-pointer">
           {membershipStatus?.isMember ? (
             <Link href="/dashboard/billing">Manage Subscription</Link>
           ) : (
