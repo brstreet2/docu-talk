@@ -6,9 +6,10 @@ import { MessageContext } from "./MessageContext";
 
 interface InputMessageProps {
   isDisabled?: boolean;
+  isMember?: boolean;
 }
 
-const InputMessage = ({ isDisabled }: InputMessageProps) => {
+const InputMessage = ({ isDisabled, isMember }: InputMessageProps) => {
   const { addMessage, handleInputChange, isLoading, message, characterLeft } =
     useContext(MessageContext);
 
@@ -24,7 +25,7 @@ const InputMessage = ({ isDisabled }: InputMessageProps) => {
                 ref={textareaRef}
                 rows={1}
                 maxRows={4}
-                maxLength={200}
+                maxLength={isMember ? 400 : 200}
                 autoFocus
                 onChange={handleInputChange}
                 value={message}
@@ -56,7 +57,8 @@ const InputMessage = ({ isDisabled }: InputMessageProps) => {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-2">
-              You have {characterLeft} of 200 character(s) remaining.
+              You have {characterLeft} of {isMember ? "400" : "200"}{" "}
+              character(s) remaining.
             </p>
           </div>
         </div>

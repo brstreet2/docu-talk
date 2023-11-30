@@ -23,6 +23,8 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
     }
   );
 
+  const membershipPlan = trpc.getMembershipStatus.useQuery();
+
   if (isLoading)
     return (
       <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
@@ -36,7 +38,7 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
           </div>
         </div>
 
-        <InputMessage isDisabled />
+        <InputMessage isDisabled isMember={membershipPlan.data?.isMember} />
       </div>
     );
 
@@ -51,7 +53,7 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
           </div>
         </div>
 
-        <InputMessage isDisabled />
+        <InputMessage isDisabled isMember={membershipPlan.data?.isMember} />
       </div>
     );
 
@@ -79,18 +81,19 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
           </div>
         </div>
 
-        <InputMessage isDisabled />
+        <InputMessage isDisabled isMember={membershipPlan.data?.isMember} />
       </div>
     );
 
   return (
     <MessageContextProvider fileId={fileId}>
       <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
+      <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2"></div>
         <div className="flex-1 justify-between flex flex-col mb-28">
           <Messages fileId={fileId} />
         </div>
 
-        <InputMessage />
+        <InputMessage isMember={membershipPlan.data?.isMember} />
       </div>
     </MessageContextProvider>
   );
