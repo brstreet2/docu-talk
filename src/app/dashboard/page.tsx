@@ -1,5 +1,6 @@
 import Dashboard from "@/components/dashboard/Dashboard";
 import { db } from "@/db";
+import { getMemberStatus } from "@/lib/xendit/xendit";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -17,7 +18,9 @@ const Page = async () => {
 
   if (!dbUser) redirect("/auth-callback?origin=dashboard");
 
-  return <Dashboard />;
+  const membershipPlan = await getMemberStatus();
+
+  return <Dashboard membershipPlan={membershipPlan} />;
 };
 
 export default Page;
