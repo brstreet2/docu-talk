@@ -58,7 +58,7 @@ const Messages = ({ fileId }: MessagesProps) => {
   }, [entry, fetchNextPage]);
 
   return (
-    <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+    <div className="flex h-full border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
       {combinedMessages && combinedMessages.length > 0 ? (
         combinedMessages.map((message, i) => {
           const isNextMessageSamePerson =
@@ -91,7 +91,7 @@ const Messages = ({ fileId }: MessagesProps) => {
           <Skeleton className="h-16" />
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-2">
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 h-full">
           {/* <MessageSquare className="h-8 w-8 text-blue-500" /> */}
           <h3 className="font-semibold text-xl">You&apos;re all set!</h3>
           <p className="text-zinc-500 text-sm">

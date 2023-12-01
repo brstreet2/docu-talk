@@ -3,9 +3,9 @@
 import { trpc } from "@/app/_trpc/client";
 import InputMessage from "./InputMessage";
 import Messages from "./Messages";
-import { ChevronLeft, Loader2, XCircle } from "lucide-react";
+import { ChevronLeft, Download, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { MessageContextProvider } from "./MessageContext";
 
 interface MessagesWrapperProps {
@@ -27,7 +27,7 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
 
   if (isLoading)
     return (
-      <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
+      <div className="relative bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
         <div className="flex-1 flex justify-center items-center flex-col mb-28">
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
@@ -87,13 +87,19 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
 
   return (
     <MessageContextProvider fileId={fileId}>
-      <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2">
-      <div className="relative min-h-full bg-zinc-50 flex divide-y divide-zinc-200 flex-col justify-between gap-2"></div>
-        <div className="flex-1 justify-between flex flex-col mb-28">
-          <Messages fileId={fileId} />
+      <div className="relative bg-zinc-50 flex flex-col justify-between h-full p-6 gap-4">
+        <div className="h-auto flex justify-end">
+          <Button variant="ghost">
+            <Download />
+          </Button>
         </div>
 
-        <InputMessage isMember={membershipPlan.data?.isMember} />
+        <div className="flex-1">
+          <Messages fileId={fileId} />
+        </div>
+        <div className="h-auto">
+          <InputMessage isMember={membershipPlan.data?.isMember} />
+        </div>
       </div>
     </MessageContextProvider>
   );

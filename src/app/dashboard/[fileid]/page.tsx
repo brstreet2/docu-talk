@@ -29,7 +29,7 @@ const Page = async ({ params }: PageProps) => {
   if (!file) notFound();
 
   return (
-    <div className="flex-1 justify-between flex flex-col h-[calc(100vh-3.5rem)]">
+    <div className="flex-1 justify-between flex flex-col">
       <div className="mx-auto w-full max-w-8xl grow lg:flex xl:px-2">
         {/* Left Content */}
         <div className="flex-1 xl:flex">
