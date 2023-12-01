@@ -88,18 +88,18 @@ const onUploadComplete = async ({
     });
 
     // Pinecone VectorDB
-    // const pineconeIndex = pinecone.index("docutalk");
-    // await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
-    //   pineconeIndex,
-    //   // namespace: createdFile.id,
-    // });
+    const pineconeIndex = pinecone.index("docutalk");
+    const test = await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
+      pineconeIndex,
+      // namespace: createdFile.id,
+    });
 
     // Supabase VectorDB
-    await SupabaseVectorStore.fromDocuments(pageLevelDocs, embeddings, {
-      client: supabase,
-      tableName: "documents",
-      queryName: "match_documents",
-    });
+    // await SupabaseVectorStore.fromDocuments(pageLevelDocs, embeddings, {
+    //   client: supabase,
+    //   tableName: "documents",
+    //   queryName: "match_documents",
+    // });
 
     await db.file.update({
       data: {

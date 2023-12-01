@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { z } from "zod";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { absoluteUrl } from "@/lib/utils";
+import { utapi } from "@/lib/uploadthing/utapi";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -133,11 +134,20 @@ export const appRouter = router({
       });
       if (!file) throw new TRPCError({ code: "NOT_FOUND" });
 
-      await db.file.delete({
-        where: {
-          id: input.id,
-        },
-      });
+      await utapi.deleteFiles(file.key);
+
+      await db.$transaction([
+        db.message.deleteMany({
+          where: {
+            fileId: file.id,
+          },
+        }),
+        db.file.delete({
+          where: {
+            id: input.id,
+          },
+        }),
+      ]);
 
       return file;
     }),

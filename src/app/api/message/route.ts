@@ -47,23 +47,23 @@ export const POST = async (req: NextRequest) => {
   });
 
   // Pinecone VectorDB
-  // const pineconeIndex = pinecone.index("docutalk");
-  // const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-  //   pineconeIndex,
-  // });
-  // const results = await vectorStore.similaritySearch(message, 4);
+  const pineconeIndex = pinecone.index("docutalk");
+  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+    pineconeIndex,
+  });
+  const results = await vectorStore.similaritySearch(message, 4);
 
-  // Supabase VectorDB
-  const supabaseStore = await SupabaseVectorStore.fromExistingIndex(
-    embeddings,
-    {
-      client: supabase,
-      tableName: "documents",
-      queryName: "match_documents",
-    }
-  );
+  // // Supabase VectorDB
+  // const supabaseStore = await SupabaseVectorStore.fromExistingIndex(
+  //   embeddings,
+  //   {
+  //     client: supabase,
+  //     tableName: "documents",
+  //     queryName: "match_documents",
+  //   }
+  // );
 
-  const results = await supabaseStore.similaritySearch(message, 1);
+  // const results = await supabaseStore.similaritySearch(message, 1);
 
   const prevMessages = await db.message.findMany({
     where: {
