@@ -17,7 +17,7 @@ const InputMessage = ({ isDisabled, isMember }: InputMessageProps) => {
 
   return (
     <>
-      <div className="">
+      <div className="relative">
         <Textarea
           ref={textareaRef}
           rows={1}
@@ -43,6 +43,7 @@ const InputMessage = ({ isDisabled, isMember }: InputMessageProps) => {
           disabled={isLoading || isDisabled}
           aria-label="send message"
           variant="ghost"
+          size="sm"
           className="absolute bottom-1.5 right-[8px]"
           onClick={() => {
             addMessage();
