@@ -16,6 +16,7 @@ import { embeddings } from "@/config/open-ai-embeddings";
 import {
   mongoUpload,
   pineconeUpload,
+  qdrantUpload,
   supabaseUpload,
 } from "@/config/vector-upload";
 
@@ -98,7 +99,10 @@ const onUploadComplete = async ({
     // await supabaseUpload(pageLevelDocs);
 
     // MongoDB VectorDB
-    await mongoUpload(pageLevelDocs);
+    // await mongoUpload(pageLevelDocs);
+
+    // Qdrant VectorDB
+    await qdrantUpload(pageLevelDocs, createdFile.id);
 
     await db.file.update({
       data: {

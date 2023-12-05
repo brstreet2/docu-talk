@@ -13,6 +13,7 @@ import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
 import {
   mongoSearch,
   pineconeSearch,
+  qdrantSearch,
   supabaseSearch,
 } from "@/config/vector-search";
 
@@ -55,7 +56,10 @@ export const POST = async (req: NextRequest) => {
   // const results = await supabaseSearch(message);
 
   // MongoDB VectorDB
-  const results = await mongoSearch(message);
+  // const results = await mongoSearch(message);
+
+  // Qdrant VectorDB
+  const results = await qdrantSearch(fileId, message);
 
   const prevMessages = await db.message.findMany({
     where: {

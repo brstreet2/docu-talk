@@ -5,6 +5,8 @@ import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import supabase from "@/lib/supabase/supabase";
 import mongodb from "@/lib/mongodb/mongodb";
 import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { qdrant } from "@/lib/qdrant/qdrant";
 
 export async function pineconeSearch(message: string) {
   const pineconeIndex = pinecone.index("docutalk");
@@ -46,6 +48,20 @@ export async function mongoSearch(message: string) {
     k: 4,
     fetchK: 20,
   });
+
+  return results;
+}
+
+export async function qdrantSearch(fileId: string, message: string) {
+  const qdrantStore = await QdrantVectorStore.fromExistingCollection(
+    embeddings,
+    {
+      client: qdrant,
+      collectionName: fileId,
+    }
+  );
+
+  const results = await qdrantStore.similaritySearch(message, 2);
 
   return results;
 }

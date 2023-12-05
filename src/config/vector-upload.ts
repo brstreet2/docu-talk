@@ -5,6 +5,8 @@ import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import supabase from "@/lib/supabase/supabase";
 import mongodb from "@/lib/mongodb/mongodb";
 import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
+import { qdrant } from "@/lib/qdrant/qdrant";
 
 export async function pineconeUpload(docs: any) {
   const pineconeIndex = pinecone.index("docutalk");
@@ -33,4 +35,17 @@ export async function mongoUpload(docs: any) {
   });
 
   await mongodb.close();
+}
+
+export async function qdrantUpload(docs: any, fileId: string) {
+  await QdrantVectorStore.fromDocuments(docs, embeddings, {
+    client: qdrant,
+    collectionName: fileId,
+    collectionConfig: {
+      vectors: {
+        size: 1536,
+        distance: "Euclid",
+      },
+    },
+  });
 }
