@@ -2,13 +2,19 @@ import { db } from "@/db";
 import { messageValidator } from "@/lib/validators/messageValidator";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextRequest } from "next/server";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { pinecone } from "@/lib/pinecone/pinecone";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { openai } from "@/lib/openai/openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import supabase from "@/lib/supabase/supabase";
+import mongodb from "@/lib/mongodb/mongodb";
+import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
+import {
+  mongoSearch,
+  pineconeSearch,
+  supabaseSearch,
+} from "@/config/vector-search";
 
 export const POST = async (req: NextRequest) => {
   // Endpoint
@@ -42,28 +48,14 @@ export const POST = async (req: NextRequest) => {
     },
   });
 
-  const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPENAI_API_KEY,
-  });
-
   // Pinecone VectorDB
-  const pineconeIndex = pinecone.index("docutalk");
-  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-    pineconeIndex,
-  });
-  const results = await vectorStore.similaritySearch(message, 4);
+  // const results = await pineconeSearch(message);
 
-  // // Supabase VectorDB
-  // const supabaseStore = await SupabaseVectorStore.fromExistingIndex(
-  //   embeddings,
-  //   {
-  //     client: supabase,
-  //     tableName: "documents",
-  //     queryName: "match_documents",
-  //   }
-  // );
+  // Supabase VectorDB
+  // const results = await supabaseSearch(message);
 
-  // const results = await supabaseStore.similaritySearch(message, 1);
+  // MongoDB VectorDB
+  const results = await mongoSearch(message);
 
   const prevMessages = await db.message.findMany({
     where: {

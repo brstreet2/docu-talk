@@ -10,6 +10,14 @@ import { createClient } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase/supabase";
 import { getMemberStatus } from "@/lib/xendit/xendit";
 import { PLANS } from "@/config/plans";
+import mongodb from "@/lib/mongodb/mongodb";
+import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
+import { embeddings } from "@/config/open-ai-embeddings";
+import {
+  mongoUpload,
+  pineconeUpload,
+  supabaseUpload,
+} from "@/config/vector-upload";
 
 const f = createUploadthing();
 
@@ -83,23 +91,14 @@ const onUploadComplete = async ({
     }
 
     // Vectorize the entire PDF
-    const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Pinecone VectorDB
-    const pineconeIndex = pinecone.index("docutalk");
-    const test = await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
-      pineconeIndex,
-      // namespace: createdFile.id,
-    });
+    // await pineconeUpload(pageLevelDocs);
 
     // Supabase VectorDB
-    // await SupabaseVectorStore.fromDocuments(pageLevelDocs, embeddings, {
-    //   client: supabase,
-    //   tableName: "documents",
-    //   queryName: "match_documents",
-    // });
+    // await supabaseUpload(pageLevelDocs);
+
+    // MongoDB VectorDB
+    await mongoUpload(pageLevelDocs);
 
     await db.file.update({
       data: {
