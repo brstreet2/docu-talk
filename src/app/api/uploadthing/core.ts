@@ -2,17 +2,8 @@ import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
-import { pinecone } from "@/lib/pinecone/pinecone";
-import { createClient } from "@supabase/supabase-js";
-import supabase from "@/lib/supabase/supabase";
 import { getMemberStatus } from "@/lib/xendit/xendit";
 import { PLANS } from "@/config/plans";
-import mongodb from "@/lib/mongodb/mongodb";
-import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
-import { embeddings } from "@/config/open-ai-embeddings";
 import {
   mongoUpload,
   pineconeUpload,
