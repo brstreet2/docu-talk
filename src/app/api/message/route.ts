@@ -2,14 +2,8 @@ import { db } from "@/db";
 import { messageValidator } from "@/lib/validators/messageValidator";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextRequest } from "next/server";
-import { pinecone } from "@/lib/pinecone/pinecone";
-import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { openai } from "@/lib/openai/openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
-import supabase from "@/lib/supabase/supabase";
-import mongodb from "@/lib/mongodb/mongodb";
-import { MongoDBAtlasVectorSearch } from "langchain/vectorstores/mongodb_atlas";
 import {
   mongoSearch,
   pineconeSearch,
