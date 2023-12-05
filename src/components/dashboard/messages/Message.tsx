@@ -67,7 +67,7 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(
               <div
                 className={cn("text-xs select-none mt-2 w-full text-right", {
                   "text-zinc-500": !message.isUserMessage,
-                  "text-blue-500": message.isUserMessage,
+                  "text-white-500": message.isUserMessage,
                 })}
               >
                 {format(new Date(message.createdAt), "HH:mm")}

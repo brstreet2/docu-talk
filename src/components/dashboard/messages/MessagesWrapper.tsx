@@ -7,6 +7,8 @@ import { ChevronLeft, Download, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MessageContextProvider } from "./MessageContext";
+import generatePDF, { Resolution, Margin } from "react-to-pdf";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MessagesWrapperProps {
   fileId: string;
@@ -24,6 +26,8 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
   );
 
   const membershipPlan = trpc.getMembershipStatus.useQuery();
+
+  const getTargetElement = () => document.getElementById("content-id");
 
   if (isLoading)
     return (
@@ -89,14 +93,20 @@ const MessagesWrapper = ({ fileId }: MessagesWrapperProps) => {
     <MessageContextProvider fileId={fileId}>
       <div className="relative bg-zinc-50 flex flex-col justify-between h-full p-6 gap-4">
         <div className="h-auto flex justify-end">
-          <Button variant="ghost">
-            <Download />
+          <Button
+            variant="ghost"
+            onClick={() =>
+              generatePDF(getTargetElement, { filename: `${fileId}.pdf` })
+            }
+          >
+            <Download className="text-blue-600" />
           </Button>
         </div>
 
-        <div className="flex-1">
+        <ScrollArea className="h-[calc(100vh-200px)]">
           <Messages fileId={fileId} />
-        </div>
+        </ScrollArea>
+
         <div className="h-auto">
           <InputMessage isMember={membershipPlan.data?.isMember} />
         </div>
