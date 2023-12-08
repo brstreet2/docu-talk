@@ -39,12 +39,14 @@ model Transaction {
   description       String
   amount            Float             @db.Double
   transactionStatus TransactionStatus @default(PENDING)
-  expiredDate       DateTime
+  expiredDate       DateTime?
 
-  User      User?    @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
   userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 enum UploadStatus {
