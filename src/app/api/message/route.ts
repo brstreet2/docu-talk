@@ -78,26 +78,24 @@ export const POST = async (req: NextRequest) => {
       {
         role: "system",
         content:
-          "Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format.",
+          "You are an assistant, and expert in mathematics, science, philosophies and languages, you are to read the given context provided. You have to answer the user questions about the context, you have to read the previous conversation you have with the users if there are any. You are to answer any questions a user might have outside of the context, giving your very best shot to answer.",
+      },
+      {
+        role: "assistant",
+        content: `PREVIOUS CONVERSATION:
+        ${formattedPrevMessages.map((message) => {
+          if (message.role === "user") return `User: ${message.content}\n`;
+          return `Assistant: ${message.content}\n`;
+        })}
+        
+        \n----------------\n
+        
+        CONTEXT (User may refer the context as document or page):
+        ${results.map((r) => r.pageContent).join("\n\n")}"`,
       },
       {
         role: "user",
-        content: `Use the following pieces of context (or previous conversaton if needed) to answer the users question in markdown format. \nIf you don't know the answer, just say that you don't know, don't try to make up an answer.
-        
-  \n----------------\n
-  
-  PREVIOUS CONVERSATION:
-  ${formattedPrevMessages.map((message) => {
-    if (message.role === "user") return `User: ${message.content}\n`;
-    return `Assistant: ${message.content}\n`;
-  })}
-  
-  \n----------------\n
-  
-  CONTEXT:
-  ${results.map((r) => r.pageContent).join("\n\n")}
-  
-  USER INPUT: ${message}`,
+        content: `${message}`,
       },
     ],
   });
