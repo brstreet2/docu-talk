@@ -1,7 +1,6 @@
 import { db } from "@/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { getMemberStatus } from "@/lib/xendit/xendit";
 import { PLANS } from "@/config/plans";
 import {
@@ -10,6 +9,7 @@ import {
   qdrantUpload,
   supabaseUpload,
 } from "@/config/vector-upload";
+import { pdfLoader } from "@/config/file-loader";
 
 const f = createUploadthing();
 
@@ -57,9 +57,15 @@ const onUploadComplete = async ({
     const response = await fetch(`https://utfs.io/f/${file.key}`);
     const blob = await response.blob();
 
-    const loader = new PDFLoader(blob);
+    const pageLevelDocs = await pdfLoader(blob);
 
-    const pageLevelDocs = await loader.load();
+    // const pageLevelDocs =
+    //   blob.type ===
+    //   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    //     ? await docxLoader(blob)
+    //     : blob.type === "application/pdf"
+    //     ? await pdfLoader(blob)
+    //     : await csvLoader(blob);
 
     const pagesAmt = pageLevelDocs.length;
 
@@ -118,11 +124,15 @@ const onUploadComplete = async ({
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  freePlanUploader: f({ pdf: { maxFileSize: "4MB" } })
+  freePlanUploader: f({
+    pdf: { maxFileSize: "4MB" },
+  })
     // Set permissions and file types for this FileRoute
     .middleware(middleware)
     .onUploadComplete(onUploadComplete),
-  proPlanUploader: f({ pdf: { maxFileSize: "16MB" } })
+  proPlanUploader: f({
+    pdf: { maxFileSize: "16MB" },
+  })
     // Set permissions and file types for this FileRoute
     .middleware(middleware)
     .onUploadComplete(onUploadComplete),
