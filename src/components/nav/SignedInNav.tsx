@@ -64,7 +64,7 @@ const SignedInNav = async ({ email, imageUrl, name }: SignedInNavProps) => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
           {membershipStatus?.isMember ? (
-            <Link href="/dashboard/billing">Manage Subscription</Link>
+            <Link href="/dashboard/subscription">Manage Subscription</Link>
           ) : (
             <Link href="/pricing">
               Upgrade <Gem className="text-blue-600 h-4 w-4 ml-1.5" />
