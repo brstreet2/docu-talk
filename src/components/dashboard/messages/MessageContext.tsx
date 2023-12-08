@@ -55,6 +55,7 @@ export const MessageContextProvider = ({ fileId, children }: Props) => {
     onMutate: async ({ message }) => {
       backupMessage.current = message;
       setMessage("");
+      setCharacterLeft(0);
 
       await utils.getFileMessages.cancel();
       const previousMessages = utils.getFileMessages.getInfiniteData();
