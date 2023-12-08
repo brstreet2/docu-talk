@@ -6,6 +6,9 @@ import { z } from "zod";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { absoluteUrl } from "@/lib/utils";
 import { utapi } from "@/lib/uploadthing/utapi";
+import { qdrant } from "@/lib/qdrant/qdrant";
+import { CreateInvoiceRequest, Invoice } from "xendit-node/invoice/models";
+import { xenditInvoiceClient } from "@/lib/xendit/xendit";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -134,7 +137,11 @@ export const appRouter = router({
       });
       if (!file) throw new TRPCError({ code: "NOT_FOUND" });
 
+      // Delete file on object storage
       await utapi.deleteFiles(file.key);
+
+      // Delete file on qdrant vector db
+      await qdrant.deleteCollection(file.id);
 
       await db.$transaction([
         db.message.deleteMany({
@@ -193,21 +200,90 @@ export const appRouter = router({
     };
     return response;
   }),
-  createXenditSession: privateProcedure.mutation(async ({ ctx }) => {
-    const { userId } = ctx;
+  createXenditSession: privateProcedure
+    .input(z.object({ memberType: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
 
-    const billingUrl = absoluteUrl("/dashboard/billing");
+      const billingUrl = absoluteUrl("/dashboard/billing");
 
-    if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-    const dbUser = await db.user.findFirst({
-      where: {
-        id: userId,
-      },
-    });
+      const dbUser = await db.user.findFirst({
+        where: {
+          id: userId,
+        },
+      });
 
-    if (!dbUser) throw new TRPCError({ code: "UNAUTHORIZED" });
-  }),
+      if (!dbUser) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const dbTransaction = await db.transaction.findFirst({
+        where: {
+          userId: userId,
+          transactionStatus: "PENDING",
+        },
+      });
+
+      if (dbTransaction) {
+        return {
+          message: `You have an outstanding payment, please pay now!\nLink: ${dbTransaction.xenditInvoiceUrl}`,
+        };
+      }
+
+      try {
+        const dbTransaction = await db.$transaction([
+          db.transaction.create({
+            data: {
+              userId,
+              description:
+                input.memberType === "pro"
+                  ? "Pro Membership Upgrade"
+                  : "Premium Membership Upgrade",
+              transactionStatus: "PENDING",
+              amount: input.memberType === "pro" ? 50000 : 75000,
+              expiredDate: new Date(),
+            },
+          }),
+        ]);
+
+        const payload: CreateInvoiceRequest = {
+          amount: dbTransaction[0].amount,
+          invoiceDuration: "172800",
+          externalId: `${dbTransaction[0].id}`,
+          description: dbTransaction[0].description,
+          currency: "IDR",
+          items: [
+            {
+              name: `${dbTransaction[0].description}`,
+              price: dbTransaction[0].amount,
+              quantity: 1,
+            },
+          ],
+          fees: [{ type: "Platform Fee", value: 4440 }],
+          successRedirectUrl: "localhost:3000/dashboard",
+        };
+
+        const response: Invoice = await xenditInvoiceClient.createInvoice({
+          data: payload,
+        });
+
+        const dbTransactionUpdate = await db.$transaction([
+          db.transaction.update({
+            where: {
+              id: dbTransaction[0].id,
+            },
+            data: {
+              xenditInvoiceUrl: response.invoiceUrl,
+              xenditTransactionId: response.id,
+              expiredDate: response.expiryDate,
+            },
+          }),
+        ]);
+        return { data: `${dbTransactionUpdate[0].xenditInvoiceUrl}` };
+      } catch (e) {
+        console.log(e);
+      }
+    }),
 });
 
 export type AppRouter = typeof appRouter;
