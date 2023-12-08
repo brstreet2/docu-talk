@@ -1,9 +1,14 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Xendit } from "xendit-node";
+import { Xendit, Invoice as InvoiceClient } from "xendit-node";
 import { PLANS } from "@/config/plans";
 import { db } from "@/db";
+import { CreateInvoiceRequest, Invoice } from "xendit-node/invoice/models";
 
 export const xenditClient = new Xendit({
+  secretKey: process.env.XENDIT_SECRET!,
+});
+
+export const xenditInvoiceClient = new InvoiceClient({
   secretKey: process.env.XENDIT_SECRET!,
 });
 
@@ -66,4 +71,23 @@ export async function getMemberStatus() {
     membershipEnd: dbUser.membershipEnd,
     isValidMember,
   };
+}
+
+export async function createPayment(userId: string, member_type: string) {
+  const payload: CreateInvoiceRequest = {
+    amount: member_type === "pro" ? 50000 : 75000,
+    invoiceDuration: "172800",
+    externalId: userId,
+    description:
+      member_type === "pro" ? "Pro Membership" : "Premium Membership",
+    currency: "IDR",
+    fees: [{ type: "Platform Fee", value: 4440 }],
+    successRedirectUrl: "/dashboard",
+  };
+
+  const response: Invoice = await xenditInvoiceClient.createInvoice({
+    data: payload,
+  });
+
+  return response;
 }
