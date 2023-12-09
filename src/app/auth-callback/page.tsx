@@ -14,6 +14,7 @@ const Page = () => {
     onSuccess: ({ success }) => {
       // User exists in DB
       if (success) {
+        trpc.getMembershipStatus.useQuery();
         router.push(origin ? `/${origin}` : "/dashboard");
       }
     },
@@ -25,8 +26,6 @@ const Page = () => {
     retry: true,
     retryDelay: 500,
   });
-
-  trpc.getMembershipStatus.useQuery();
 
   return (
     <div className="w-full mt-24 flex justify-center">
