@@ -109,7 +109,7 @@ const Page = async () => {
                       {plan}
                     </h3>
                     <p className="text-gray-500">{tagline}</p>
-                    <p className="my-5 font-display text-6xl font-semibold">
+                    <p className="my-5 font-display text-5xl font-semibold text-slate-800">
                       {new Intl.NumberFormat("id-ID", {
                         style: "currency",
                         currency: "IDR",
