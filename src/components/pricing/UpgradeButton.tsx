@@ -4,25 +4,34 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { trpc } from "@/app/_trpc/client";
 import { useState } from "react";
+import { redirect } from "next/navigation";
+import { useToast } from "../ui/use-toast";
 
 interface UpgradeButtonProps {
   memberType: string;
 }
 
 const UpgradeButton = ({ memberType }: UpgradeButtonProps) => {
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { mutate: createXenditSession } = trpc.createXenditSession.useMutation({
     onMutate: () => {
       setIsLoading(true);
     },
     onSuccess: (response) => {
-      setIsLoading(false);
+      redirect("/dashboard/subscription");
     },
     onError: (response) => {
+      toast({
+        title: "There was a problem...",
+        description: "Please try again in a moment",
+        variant: "destructive",
+      });
       console.log(response);
       setIsLoading(false);
     },
   });
+
   return (
     <Button
       className="w-full"
