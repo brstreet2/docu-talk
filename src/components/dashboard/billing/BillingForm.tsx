@@ -102,7 +102,11 @@ const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
             <Table>
               <TableCaption>
                 Your plan will expires on{" "}
-                {format(subscriptionPlan.membershipEnd!, "dd-MM-yyyy")}.
+                {format(
+                  new Date(subscriptionPlan.membershipEnd!),
+                  "dd-MM-yyyy"
+                )}
+                .
               </TableCaption>
               <TableBody>
                 <TableRow>
