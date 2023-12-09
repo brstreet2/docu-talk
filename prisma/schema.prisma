@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("SUPABASE_DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -37,7 +37,7 @@ model Transaction {
   xenditInvoiceUrl    String?
 
   description       String
-  amount            Float             @db.Double
+  amount            Float
   transactionStatus TransactionStatus @default(PENDING)
   expiredDate       DateTime?
 
