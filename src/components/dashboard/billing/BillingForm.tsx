@@ -48,8 +48,7 @@ const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
             <CardHeader>
               <CardTitle>Billing</CardTitle>
               <CardDescription>
-                You have an outstanding {""}
-                <strong>payment</strong>.
+                You have an outstanding <strong>payment</strong>.
               </CardDescription>
               <Table className="mt-4">
                 <TableCaption>A list of your recent invoices.</TableCaption>
