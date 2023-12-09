@@ -9,7 +9,6 @@ import { utapi } from "@/lib/uploadthing/utapi";
 import { qdrant } from "@/lib/qdrant/qdrant";
 import { CreateInvoiceRequest, Invoice } from "xendit-node/invoice/models";
 import { xenditInvoiceClient } from "@/lib/xendit/xendit";
-import { NextResponse } from "next/server";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -251,7 +250,7 @@ export const appRouter = router({
         ]);
 
         const payload: CreateInvoiceRequest = {
-          amount: dbTransaction[0].amount,
+          amount: dbTransaction[0].amount + 4440,
           invoiceDuration: "172800",
           externalId: `${dbTransaction[0].id}`,
           description: dbTransaction[0].description,
@@ -264,7 +263,7 @@ export const appRouter = router({
             },
           ],
           fees: [{ type: "Platform Fee", value: 4440 }],
-          successRedirectUrl: "localhost:3000/dashboard",
+          successRedirectUrl: absoluteUrl("/dashboard/subscription"),
         };
 
         const response: Invoice = await xenditInvoiceClient.createInvoice({
