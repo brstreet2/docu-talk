@@ -9,6 +9,7 @@ import { utapi } from "@/lib/uploadthing/utapi";
 import { qdrant } from "@/lib/qdrant/qdrant";
 import { CreateInvoiceRequest, Invoice } from "xendit-node/invoice/models";
 import { xenditInvoiceClient } from "@/lib/xendit/xendit";
+import { NextResponse } from "next/server";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -226,7 +227,10 @@ export const appRouter = router({
 
       if (dbTransaction) {
         return {
-          message: `You have an outstanding payment, please pay now!\nLink: ${dbTransaction.xenditInvoiceUrl}`,
+          status: 200,
+          error: false,
+          message: `You have an outstanding payment, please pay now!`,
+          data: dbTransaction.xenditInvoiceUrl,
         };
       }
 
