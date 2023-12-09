@@ -43,11 +43,10 @@ export function constructMetadata({
       title,
       description,
       images: [image],
-      creator: "@joshtriedcoding",
+      creator: "@azka.secio",
     },
     icons,
     metadataBase: new URL("https://tanya-pdf-mu.vercel.app"),
-    themeColor: "#FFF",
     ...(noIndex && {
       robots: {
         index: false,
