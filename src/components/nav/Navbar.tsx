@@ -9,6 +9,7 @@ import {
 import { ArrowRight } from "lucide-react";
 import SignedInNav from "./SignedInNav";
 import MobileNav from "./MobileNav";
+import Image from "next/image";
 
 const Navbar = async () => {
   const { getUser } = getKindeServerSession();
@@ -18,7 +19,13 @@ const Navbar = async () => {
       <MaxWidthWrapper>
         <div className="flex h-14 items-center justify-between border-b border-zinc=200">
           <Link href="/" className="flex z-40 font-semibold">
-            <span>DocuTalk</span>
+            <Image
+              src="/logo2.png"
+              width={150}
+              height={200}
+              quality={100}
+              alt="logo-1"
+            />
           </Link>
 
           <MobileNav isAuth={!!user} />
