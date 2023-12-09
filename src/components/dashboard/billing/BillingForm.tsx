@@ -119,7 +119,7 @@ const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
                   <HelpCircle className="h-4 w-4 text-zinc-500" />
                 </TooltipTrigger>
                 <TooltipContent className="w-40 p-2">
-                  If you don't pay your bills before{" "}
+                  If you don&apos;t pay your bills before{" "}
                   {format(
                     new Date(subscriptionPlan.membershipEnd!),
                     "dd-MM-yyyy"
