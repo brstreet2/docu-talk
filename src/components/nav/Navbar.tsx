@@ -52,10 +52,11 @@ const Navbar = async () => {
                 </LoginLink>
                 <RegisterLink
                   className={buttonVariants({
+                    variant: "ghost",
                     size: "sm",
                   })}
                 >
-                  Get Started <ArrowRight className="ml-1.5 h-5" />
+                  Create Account <ArrowRight className="ml-1.5 h-5" />
                 </RegisterLink>
               </>
             ) : (
