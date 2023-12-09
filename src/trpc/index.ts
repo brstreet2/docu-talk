@@ -9,6 +9,7 @@ import { utapi } from "@/lib/uploadthing/utapi";
 import { qdrant } from "@/lib/qdrant/qdrant";
 import { CreateInvoiceRequest, Invoice } from "xendit-node/invoice/models";
 import { xenditInvoiceClient } from "@/lib/xendit/xendit";
+import { isAfter } from "date-fns";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -287,6 +288,59 @@ export const appRouter = router({
         console.log(e);
       }
     }),
+  getOutstandingPayment: privateProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    const dbUser = await db.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!dbUser) throw new TRPCError({ code: "NOT_FOUND" });
+
+    const dbTransaction = await db.transaction.findFirst({
+      where: {
+        userId: userId,
+        transactionStatus: "PENDING",
+      },
+    });
+
+    if (!dbTransaction) {
+      return {
+        status: 200,
+        error: false,
+        message: `You have no outstanding payment.`,
+        data: null,
+      };
+    }
+
+    if (isAfter(new Date(), dbTransaction.expiredDate!)) {
+      await db.$transaction([
+        db.transaction.update({
+          where: {
+            id: dbTransaction.id,
+          },
+          data: {
+            transactionStatus: "EXPIRED",
+          },
+        }),
+      ]);
+      return {
+        status: 200,
+        error: false,
+        message: "You have an expired payment.",
+        data: null,
+      };
+    }
+
+    return {
+      status: 200,
+      error: false,
+      message: `You have an outstanding payment, please pay now!`,
+      data: dbTransaction,
+    };
+  }),
 });
 
 export type AppRouter = typeof appRouter;
