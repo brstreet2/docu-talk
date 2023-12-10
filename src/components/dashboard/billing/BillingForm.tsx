@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { getMemberStatus } from "@/lib/xendit/xendit";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -33,6 +33,7 @@ import SubscriptionDetails from "./SubscriptionDetails";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import Skeleton from "react-loading-skeleton";
+import SdSkeleton from "./SdSkeleton";
 
 interface BillingFormProps {
   subscriptionPlan: Awaited<ReturnType<typeof getMemberStatus>>;
@@ -54,13 +55,17 @@ const BillingForm = ({ subscriptionPlan }: BillingFormProps) => {
     window.location.href = url;
   };
 
+  if (isLoading) {
+    return <SdSkeleton />;
+  }
+
   if (outstandingPayment?.data === null) {
     return <SubscriptionDetails subscriptionPlan={subscriptionPlan} />;
   } else {
     return (
       <MaxWidthWrapper className="max-w-5xl">
         <TooltipProvider>
-          <Card>
+          <Card className="mt-12">
             <CardHeader>
               <CardTitle>Billing</CardTitle>
               <CardDescription>
