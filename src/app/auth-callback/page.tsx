@@ -18,11 +18,12 @@ const Page = () => {
       }
     },
     onError: (err) => {
+      console.log(err);
       if (err.data?.code === "UNAUTHORIZED") {
         router.push("/sign-in");
       }
     },
-    retry: true,
+    retry: 3,
     retryDelay: 500,
   });
 

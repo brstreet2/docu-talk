@@ -75,7 +75,7 @@ const SignedInNav = async ({ email, imageUrl, name }: SignedInNavProps) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">
-          <LogoutLink>Log Out</LogoutLink>
+          <Link href="/sign-out">Sign Out</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
